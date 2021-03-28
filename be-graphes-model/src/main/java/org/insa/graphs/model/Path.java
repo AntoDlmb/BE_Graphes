@@ -201,8 +201,15 @@ public class Path {
      * @deprecated Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+        if (this.isEmpty()) {
+        	return true;
+        }else if (this.getArcs().isEmpty()) {
+        	return true;
+        }else {
+        	if (this.getOrigin().equals(this.getArcs().get(0))) {
+        		
+        	}
+        }
     }
 
     /**
@@ -210,11 +217,17 @@ public class Path {
      * 
      * @return Total length of the path (in meters).
      * 
-     * @deprecated Need to be implemented.
      */
     public float getLength() {
-        // TODO:
-        return 0;
+        float pathLength = 0;
+        List <Arc> listeArcsPath = new ArrayList <Arc>();//question par rapport aux interfaces
+        listeArcsPath = this.getArcs();
+        for (Arc oneArc : listeArcsPath) {
+        	pathLength += oneArc.getLength();
+        }
+        
+        
+        return pathLength;
     }
 
     /**
@@ -225,11 +238,15 @@ public class Path {
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
      * 
-     * @deprecated Need to be implemented.
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+    	double pathTravelTime = 0.0;
+        List <Arc> listeArcsPath = new ArrayList <Arc>();//question par rapport aux interfaces
+        listeArcsPath = this.getArcs();
+        for (Arc oneArc : listeArcsPath) {
+        	pathTravelTime += oneArc.getTravelTime(speed);
+        }
+        return pathTravelTime;
     }
 
     /**
@@ -238,11 +255,15 @@ public class Path {
      * 
      * @return Minimum travel time to travel this path (in seconds).
      * 
-     * @deprecated Need to be implemented.
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+    	double pathMinimumTravelTime = 0.0;
+        List <Arc> listeArcsPath = new ArrayList <Arc>();//question par rapport aux interfaces
+        listeArcsPath = this.getArcs();
+        for (Arc oneArc : listeArcsPath) {
+        	pathMinimumTravelTime += oneArc.getMinimumTravelTime();
+        }
+        return pathMinimumTravelTime ;
     }
 
 }
