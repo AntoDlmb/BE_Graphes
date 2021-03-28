@@ -51,12 +51,57 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        //On test si la liste de node est vide ou avec un seul node. Si oui on envoie le path correspondant
+    	if (nodes.isEmpty()) {
+        	return new Path(graph);	
+        }else if (nodes.size()==1) {
+        	return new Path(graph, nodes.get(0));
+        }
+    	
+    	
+    	List<Arc> arcs = new ArrayList<Arc>();
+        int indexNextNode;
+        boolean nextNodeIsSuccessor;
+        Arc shortestArc=null;
+        float shortestLength;
+        
+        
+        for (Node oneNode : nodes) {
+        	indexNextNode=nodes.indexOf(oneNode)+1;
+        	nextNodeIsSuccessor=false;
+        	shortestLength=-1;
+        	if (indexNextNode<nodes.size()) {
+        		
+        		for (Arc oneArc : oneNode.getSuccessors()) {
+        			if(oneArc.getDestination().equals(nodes.get(indexNextNode))) {
+        				nextNodeIsSuccessor=true;
+        				if (shortestLength==-1) {
+        					shortestLength=oneArc.getLength();
+        					shortestArc=oneArc;
+        				}else {
+        					if (oneArc.getLength()<shortestLength) {
+        						shortestLength=oneArc.getLength();
+        						shortestArc=oneArc;
+        					}
+        				}
+        			
+        			}
+        		
+        		}	
+        	
+        		if (!(nextNodeIsSuccessor)) {
+        			throw (new IllegalArgumentException());
+        		}else {
+        			arcs.add(shortestArc);
+        		}
+        	}
+        	
+        	
+        }
+        
         return new Path(graph, arcs);
     }
 
@@ -198,18 +243,31 @@ public class Path {
      * 
      * @return true if the path is valid, false otherwise.
      * 
-     * @deprecated Need to be implemented.
      */
     public boolean isValid() {
+    	boolean pathValid = true;
         if (this.isEmpty()) {
         	return true;
         }else if (this.getArcs().isEmpty()) {
         	return true;
         }else {
-        	if (this.getOrigin().equals(this.getArcs().get(0))) {
-        		
+        	List <Arc> listeArcsPath = new ArrayList <Arc>();
+    		listeArcsPath=this.getArcs();
+        	if (this.getOrigin().equals(listeArcsPath.get(0).getOrigin())) {
+        		int indexOfNextElement;
+        		for (Arc oneArc : listeArcsPath) {
+        			indexOfNextElement=listeArcsPath.indexOf(oneArc)+1;
+        			if (indexOfNextElement<listeArcsPath.size()) {
+        			
+        				if (!(oneArc.getDestination().equals(listeArcsPath.get(indexOfNextElement).getOrigin()))) {
+        					return false;
+        				} 
+        			}
+        				
+                }
         	}
         }
+        return pathValid;
     }
 
     /**
