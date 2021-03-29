@@ -30,12 +30,57 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+    	//On test si la liste de node est vide ou avec un seul node. Si oui on envoie le path correspondant
+    	if (nodes.isEmpty()) {
+        	return new Path(graph);	
+        }else if (nodes.size()==1) {
+        	return new Path(graph, nodes.get(0));
+        }
+    	
+    	
+    	List<Arc> arcs = new ArrayList<Arc>();
+        int indexNextNode;
+        boolean nextNodeIsSuccessor;
+        Arc fastestArc=null;
+        double fastestTime;
+        
+        
+        for (Node oneNode : nodes) {
+        	indexNextNode=nodes.indexOf(oneNode)+1;
+        	nextNodeIsSuccessor=false;
+        	fastestTime=-1;
+        	if (indexNextNode<nodes.size()) {
+        		
+        		for (Arc oneArc : oneNode.getSuccessors()) {
+        			if(oneArc.getDestination().equals(nodes.get(indexNextNode))) {
+        				nextNodeIsSuccessor=true;
+        				if (fastestTime==-1) {
+        					fastestTime=oneArc.getMinimumTravelTime();
+        					fastestArc=oneArc;
+        				}else {
+        					if (oneArc.getMinimumTravelTime()<fastestTime) {
+        						fastestTime=oneArc.getMinimumTravelTime();
+        						fastestArc=oneArc;
+        					}
+        				}
+        			
+        			}
+        		
+        		}	
+        	
+        		if (!(nextNodeIsSuccessor)) {
+        			throw (new IllegalArgumentException());
+        		}else {
+        			arcs.add(fastestArc);
+        		}
+        	}
+        	
+        	
+        }
+        
         return new Path(graph, arcs);
     }
 
