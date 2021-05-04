@@ -33,7 +33,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         List<Label> labels = new ArrayList<Label>();
         
         
-        //Initialisation des noeuds
+        //Initialisation des labels
         for (Node oneNode : graph.getNodes()) {
         	if (!(oneNode.equals(origin))) {
         		labels.add(new Label(oneNode,false,Float.POSITIVE_INFINITY,arc));
@@ -50,6 +50,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
         //On créé un tableau dans lequel chaque noeud correspond à un label
         List <Label> nodeToLabel = new ArrayList <Label>();
+        for (int k=0 ; k<labels.size() ; k++) {
+        	nodeToLabel.add(null);
+        }
         for (Label oneLabel : labels) {
         	nodeToLabel.set(oneLabel.sommet.getId(), oneLabel);
         }
@@ -58,9 +61,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         //On commence l'algorithme 
         boolean trouve = false;
         List<Arc> Suc = new ArrayList<Arc>();
-        Label labelCourrant;
+        Label labelCourrant=null;
         Label labelModif;
-        List <Label> labelMarques = new ArrayList <Label>();
+        //List <Label> labelMarques = new ArrayList <Label>();
         
         while (!(trouve) && !(tas.isEmpty())) {
         	labelCourrant=tas.findMin();
@@ -83,25 +86,23 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	}
         	
         	//On ajout l'élément marqué dans notre tableau d'éléments 
-        	labelMarques.set(labelCourrant.sommet.getId(),labelCourrant);
+        	//labelMarques.set(labelCourrant.sommet.getId(),labelCourrant);
         		
         }
         System.out.println("Sortie algo");
         if (trouve) {
-        	//on créé la liste des noeuds qui consitutent le chemin 
-        	List <Arc> sol = new ArrayList<Arc> ();
-        	sol.add(nodeToLabel.get(destination.getId()).pere);
-        	Arc addedArc=nodeToLabel.get(destination.getId()).pere;
-        	while (!(addedArc.getOrigin().equals(origin))) {
-        		addedArc =nodeToLabel.get(addedArc.getOrigin().getId()).pere ;
-        		sol.add(addedArc);
+        	
+        	List <Arc> sol = new ArrayList <Arc>();
+        	sol.add(labelCourrant.pere);
+        	Node fatherNode = labelCourrant.pere.getOrigin();
+        	while (!(fatherNode.equals(origin))) {
+        		labelCourrant=nodeToLabel.get(fatherNode.getId());
+        		sol.add(labelCourrant.pere);
+        		fatherNode=labelCourrant.pere.getOrigin();
         	}
         	//On reverse notre tableau de node
-        	List <Arc> solFinal = new ArrayList <Arc>();
-        	for (int i = 0; i<sol.size() ; i++) {
-        		solFinal.set(i, sol.get(sol.size()-1-i));
-        	}
-        	Path pathSolution = new Path(graph, solFinal);
+        	Collections.reverse(sol);
+        	Path pathSolution = new Path(graph, sol);
         	System.out.println("Resultat mis en place");
         	
         	solution = new ShortestPathSolution(data, AbstractSolution.Status.OPTIMAL, pathSolution);
