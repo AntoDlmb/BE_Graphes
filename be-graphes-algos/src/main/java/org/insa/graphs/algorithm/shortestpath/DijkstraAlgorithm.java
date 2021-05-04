@@ -14,6 +14,7 @@ import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.model.Label;
 import org.insa.graphs.algorithm.utils.BinaryHeap;
+import org.insa.graphs.algorithm.utils.ElementNotFoundException;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
@@ -43,11 +44,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
         System.out.println("Node init");
         
-        //On place tous les labels dans un tas binaire
+        //On créé le tas binaire qui contiendra tous les Labels
         BinaryHeap <Label> tas = new BinaryHeap <Label> ();
-        for (Label oneLabel : labels) {
-        	tas.insert(oneLabel);
-        }
+        
         //On créé un tableau dans lequel chaque noeud correspond à un label
         List <Label> nodeToLabel = new ArrayList <Label>();
         for (int k=0 ; k<labels.size() ; k++) {
@@ -58,20 +57,34 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
         System.out.println("NodeToLabel");
         
+        
+        
         //On commence l'algorithme 
         boolean trouve = false;
         List<Arc> Suc = new ArrayList<Arc>();
         Label labelCourrant=null;
         Label labelModif;
-        //List <Label> labelMarques = new ArrayList <Label>();
+        tas.insert(nodeToLabel.get(origin.getId()));
+        //boolean pathFound=true;
         
-        while (!(trouve) && !(tas.isEmpty())) {
+        while (!(trouve) && !(tas.isEmpty()) ) {
         	labelCourrant=tas.findMin();
         	tas.deleteMin();
         	Suc=labelCourrant.sommet.getSuccessors();
+        
         	//on trouve le minimum parmis les successors
         	for (Arc oneArc : Suc) {
+        		if (!data.isAllowed(oneArc)) {
+                    continue;
+                }
         		labelModif=nodeToLabel.get(oneArc.getDestination().getId());
+        		try {
+        			tas.remove(labelModif);
+        			tas.insert(labelModif);
+        		}catch(ElementNotFoundException e) {
+        			tas.insert(labelModif);
+        		}
+        		
         		if (labelCourrant.getCost()+oneArc.getLength() < labelModif.getCost()){
         			tas.remove(labelModif);
         			labelModif.setCost(labelCourrant.getCost()+oneArc.getLength());
@@ -80,13 +93,15 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			tas.insert(labelModif);
         		}
         	}
-        	labelCourrant.marque=true;
-        	if (labelCourrant.sommet.equals(destination)) {
-        		trouve=true;
-        	}
         	
-        	//On ajout l'élément marqué dans notre tableau d'éléments 
-        	//labelMarques.set(labelCourrant.sommet.getId(),labelCourrant);
+    
+        	labelCourrant.marque=true;
+            if (labelCourrant.sommet.equals(destination)) {
+            	trouve=true;
+            }
+           
+        	
+        	
         		
         }
         System.out.println("Sortie algo");
