@@ -14,7 +14,6 @@ import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.model.Label;
 import org.insa.graphs.algorithm.utils.BinaryHeap;
-import org.insa.graphs.algorithm.utils.ElementNotFoundException;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
@@ -44,9 +43,12 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
         System.out.println("Node init");
         
-        //On créé le tas binaire qui contiendra tous les Labels
+        //On place tous les labels dans un tas binaire
+        //Mieux vaut le faire dans l'algortihme directement parce que peut-être que certains noeuds ne seront pas utilisé ce qui diminue juste les performances
         BinaryHeap <Label> tas = new BinaryHeap <Label> ();
-        
+        for (Label oneLabel : labels) {
+        	tas.insert(oneLabel);
+        }
         //On créé un tableau dans lequel chaque noeud correspond à un label
         List <Label> nodeToLabel = new ArrayList <Label>();
         for (int k=0 ; k<labels.size() ; k++) {
@@ -57,34 +59,23 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
         System.out.println("NodeToLabel");
         
-        
-        
         //On commence l'algorithme 
         boolean trouve = false;
         List<Arc> Suc = new ArrayList<Arc>();
         Label labelCourrant=null;
         Label labelModif;
-        tas.insert(nodeToLabel.get(origin.getId()));
-        //boolean pathFound=true;
         
-        while (!(trouve) && !(tas.isEmpty()) ) {
+        while (!(trouve) && !(tas.isEmpty())) {
         	labelCourrant=tas.findMin();
         	tas.deleteMin();
         	Suc=labelCourrant.sommet.getSuccessors();
-        
         	//on trouve le minimum parmis les successors
         	for (Arc oneArc : Suc) {
         		if (!data.isAllowed(oneArc)) {
                     continue;
                 }
         		labelModif=nodeToLabel.get(oneArc.getDestination().getId());
-        		try {
-        			tas.remove(labelModif);
-        			tas.insert(labelModif);
-        		}catch(ElementNotFoundException e) {
-        			tas.insert(labelModif);
-        		}
-        		
+        		//Si aucun arc n'est autorisé alors on sort de la boucle 
         		if (labelCourrant.getCost()+oneArc.getLength() < labelModif.getCost()){
         			tas.remove(labelModif);
         			labelModif.setCost(labelCourrant.getCost()+oneArc.getLength());
