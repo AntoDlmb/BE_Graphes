@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.print.attribute.standard.Destination;
 
+import org.insa.graphs.algorithm.AbstractInputData;
 import org.insa.graphs.algorithm.AbstractSolution;
 import org.insa.graphs.algorithm.AbstractSolution.Status;
 import org.insa.graphs.model.Arc;
@@ -19,6 +20,14 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
+    }
+    
+    public static double getLengthOrTravelTime (AbstractInputData.Mode mode, Arc arc) {
+    	if (mode==AbstractInputData.Mode.TIME) {
+    		return arc.getMinimumTravelTime();
+    	}else {
+    		return arc.getLength();
+    	}
     }
 
     @Override
@@ -34,13 +43,19 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         BinaryHeap <Label> tas = new BinaryHeap <Label> ();
         Label labelOrigin=null;
         
+        //On vérifie d'abord si le l'origine est égal à la destination 
+       if (origin.equals(destination)) {
+    	   System.out.println("L'origine et la destination sont le même lieu");
+    	   return new ShortestPathSolution(data, AbstractSolution.Status.INFEASIBLE);
+       }
+        
         
         //Initialisation des labels
         for (Node oneNode : graph.getNodes()) {
         	if (!(oneNode.equals(origin))) {
-        		labels.add(new Label(oneNode,false,Float.POSITIVE_INFINITY,arc));
+        		labels.add(new Label(oneNode,false,Double.POSITIVE_INFINITY,arc));
         	}else {
-        		labelOrigin = new Label(oneNode,true,0.0f,arc);
+        		labelOrigin = new Label(oneNode,true,0.0,arc);
         		labels.add(labelOrigin);
         		tas.insert(labelOrigin);
         	}
@@ -80,21 +95,21 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                 }
         		labelModif=nodeToLabel.get(oneArc.getDestination().getId());
         		//on insère labelModif dans le tas seulement si il n'a pas été ajouté avant
-        		if (labelModif.getCost()==Float.POSITIVE_INFINITY) {
+        		if (labelModif.getCost()==Double.POSITIVE_INFINITY) {
         			tas.insert(labelModif);
         		}
-        		float oldvalue=labelModif.getCost();
+        		Double oldvalue=labelModif.getCost();
         		System.out.println("on a inséré dans le tas le label qu'on modifie");
         		//Si aucun arc n'est autorisé alors on sort de la boucle 
-        		if (labelCourrant.getCost()+oneArc.getLength() < labelModif.getCost()){
+        		if (labelCourrant.getCost()+DijkstraAlgorithm.getLengthOrTravelTime(data.getMode(), oneArc) < labelModif.getCost()){
         			tas.remove(labelModif);
-        			labelModif.setCost(labelCourrant.getCost()+oneArc.getLength());
+        			labelModif.setCost(labelCourrant.getCost()+DijkstraAlgorithm.getLengthOrTravelTime(data.getMode(), oneArc));
         			labelModif.pere=oneArc;
         			nodeToLabel.set(oneArc.getDestination().getId(), labelModif);
         			tas.insert(labelModif);
         		}
-        		float newValue=labelModif.getCost();
-        		if (Float.isInfinite(oldvalue)&&Float.isFinite(newValue)) {
+        		double newValue=labelModif.getCost();
+        		if (Double.isInfinite(oldvalue)&&Double.isFinite(newValue)) {
         			notifyNodeReached(labelModif.sommet);
         		}
         	}
