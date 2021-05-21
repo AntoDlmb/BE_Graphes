@@ -31,6 +31,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         Graph graph = data.getGraph();
         Arc arc=null;
         List<Label> labels = new ArrayList<Label>();
+        BinaryHeap <Label> tas = new BinaryHeap <Label> ();
+        Label labelOrigin=null;
         
         
         //Initialisation des labels
@@ -38,17 +40,18 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	if (!(oneNode.equals(origin))) {
         		labels.add(new Label(oneNode,false,Float.POSITIVE_INFINITY,arc));
         	}else {
-        		labels.add(new Label(oneNode,true,0.0f,arc));
+        		labelOrigin = new Label(oneNode,true,0.0f,arc);
+        		labels.add(labelOrigin);
+        		tas.insert(labelOrigin);
         	}
         }
         System.out.println("Node init");
         
         //On place tous les labels dans un tas binaire
         //Mieux vaut le faire dans l'algortihme directement parce que peut-être que certains noeuds ne seront pas utilisé ce qui diminue juste les performances
-        BinaryHeap <Label> tas = new BinaryHeap <Label> ();
-        for (Label oneLabel : labels) {
-        	tas.insert(oneLabel);
-        }
+        //for (Label oneLabel : labels) {
+        //	tas.insert(oneLabel);
+        //}
         //On créé un tableau dans lequel chaque noeud correspond à un label
         List <Label> nodeToLabel = new ArrayList <Label>();
         for (int k=0 ; k<labels.size() ; k++) {
@@ -69,12 +72,19 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	labelCourrant=tas.findMin();
         	tas.deleteMin();
         	Suc=labelCourrant.sommet.getSuccessors();
+        	System.out.println("on viens de trouver tous les successeurs du label courant");
         	//on trouve le minimum parmis les successors
         	for (Arc oneArc : Suc) {
         		if (!data.isAllowed(oneArc)) {
                     continue;
                 }
         		labelModif=nodeToLabel.get(oneArc.getDestination().getId());
+        		//on insère labelModif dans le tas seulement si il n'a pas été ajouté avant
+        		if (labelModif.getCost()==Float.POSITIVE_INFINITY) {
+        			tas.insert(labelModif);
+        		}
+        		
+        		System.out.println("on a inséré dans le tas le label qu'on modifie");
         		//Si aucun arc n'est autorisé alors on sort de la boucle 
         		if (labelCourrant.getCost()+oneArc.getLength() < labelModif.getCost()){
         			tas.remove(labelModif);
