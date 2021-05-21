@@ -83,7 +83,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		if (labelModif.getCost()==Float.POSITIVE_INFINITY) {
         			tas.insert(labelModif);
         		}
-        		
+        		float oldvalue=labelModif.getCost();
         		System.out.println("on a inséré dans le tas le label qu'on modifie");
         		//Si aucun arc n'est autorisé alors on sort de la boucle 
         		if (labelCourrant.getCost()+oneArc.getLength() < labelModif.getCost()){
@@ -92,6 +92,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			labelModif.pere=oneArc;
         			nodeToLabel.set(oneArc.getDestination().getId(), labelModif);
         			tas.insert(labelModif);
+        		}
+        		float newValue=labelModif.getCost();
+        		if (Float.isInfinite(oldvalue)&&Float.isFinite(newValue)) {
+        			notifyNodeReached(labelModif.sommet);
         		}
         	}
         	
