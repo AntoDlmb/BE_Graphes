@@ -22,13 +22,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
     }
     
-    public static double getLengthOrTravelTime (AbstractInputData.Mode mode, Arc arc) {
-    	if (mode==AbstractInputData.Mode.TIME) {
-    		return arc.getMinimumTravelTime();
-    	}else {
-    		return arc.getLength();
-    	}
-    }
 
     @Override
     protected ShortestPathSolution doRun() {
@@ -42,7 +35,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         List<Label> labels = new ArrayList<Label>();
         BinaryHeap <Label> tas = new BinaryHeap <Label> ();
         Label labelOrigin=null;
-        
         //On vérifie d'abord si le l'origine est égal à la destination 
        if (origin.equals(destination)) {
     	   System.out.println("L'origine et la destination sont le même lieu");
@@ -60,13 +52,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		tas.insert(labelOrigin);
         	}
         }
-        System.out.println("Node init");
+        //System.out.println("Node init");
         
-        //On place tous les labels dans un tas binaire
-        //Mieux vaut le faire dans l'algortihme directement parce que peut-être que certains noeuds ne seront pas utilisé ce qui diminue juste les performances
-        //for (Label oneLabel : labels) {
-        //	tas.insert(oneLabel);
-        //}
+    
         //On créé un tableau dans lequel chaque noeud correspond à un label
         List <Label> nodeToLabel = new ArrayList <Label>();
         for (int k=0 ; k<labels.size() ; k++) {
@@ -75,19 +63,18 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         for (Label oneLabel : labels) {
         	nodeToLabel.set(oneLabel.sommet.getId(), oneLabel);
         }
-        System.out.println("NodeToLabel");
+        //System.out.println("NodeToLabel");
         
         //On commence l'algorithme 
         boolean trouve = false;
         List<Arc> Suc = new ArrayList<Arc>();
         Label labelCourrant=null;
-        Label labelModif;
+        Label labelModif=null;
         
         while (!(trouve) && !(tas.isEmpty())) {
         	labelCourrant=tas.findMin();
         	tas.deleteMin();
         	Suc=labelCourrant.sommet.getSuccessors();
-        	System.out.println("on viens de trouver tous les successeurs du label courant");
         	//on trouve le minimum parmis les successors
         	for (Arc oneArc : Suc) {
         		if (!data.isAllowed(oneArc)) {
@@ -99,11 +86,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			tas.insert(labelModif);
         		}
         		Double oldvalue=labelModif.getCost();
-        		System.out.println("on a inséré dans le tas le label qu'on modifie");
-        		//Si aucun arc n'est autorisé alors on sort de la boucle 
-        		if (labelCourrant.getCost()+DijkstraAlgorithm.getLengthOrTravelTime(data.getMode(), oneArc) < labelModif.getCost()){
+        		if (labelCourrant.getCost()+data.getCost(oneArc) < labelModif.getCost()){
         			tas.remove(labelModif);
-        			labelModif.setCost(labelCourrant.getCost()+DijkstraAlgorithm.getLengthOrTravelTime(data.getMode(), oneArc));
+        			labelModif.setCost(labelCourrant.getCost()+data.getCost(oneArc));
         			labelModif.pere=oneArc;
         			nodeToLabel.set(oneArc.getDestination().getId(), labelModif);
         			tas.insert(labelModif);
@@ -116,15 +101,22 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	
     
         	labelCourrant.marque=true;
+        	//System.out.println(labelCourrant.getCost());
+        	notifyNodeMarked(labelCourrant.sommet);
+        	
             if (labelCourrant.sommet.equals(destination)) {
             	trouve=true;
             }
+            if (!(tas.isValid())) {
+            	System.out.println("LE TAS N'EST PAS VALIDE");
+            }
+            
            
         	
         	
         		
         }
-        System.out.println("Sortie algo");
+        //System.out.println("Sortie algo");
         if (trouve) {
         	
         	List <Arc> sol = new ArrayList <Arc>();
