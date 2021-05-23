@@ -23,7 +23,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	protected Node origin;
 	protected Label labelOrigin;
 	protected Node destination;
-	protected Label labelDestination;
 	protected BinaryHeap <Label> tas ;
 
     public DijkstraAlgorithm(ShortestPathData data) {
@@ -34,6 +33,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         this.labels = new ArrayList<Label>();
         this.tas = new BinaryHeap <Label> ();
         //Initialisation des labels
+       
         for (Node oneNode : graph.getNodes()) {
         	if (!(oneNode.equals(origin))) {
         		this.labels.add(new Label(oneNode,false,Double.POSITIVE_INFINITY,null));
@@ -78,10 +78,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         List<Arc> Suc = new ArrayList<Arc>();
         Label labelCourrant=null;
         Label labelModif=null;
-        
+        notifyOriginProcessed(this.origin);
         while (!(trouve) && !(tas.isEmpty())) {
-        	labelCourrant=tas.findMin();
-        	tas.deleteMin();
+        	labelCourrant=tas.deleteMin();
         	Suc=labelCourrant.sommet.getSuccessors();
         	//on trouve le minimum parmis les successors
         	for (Arc oneArc : Suc) {
@@ -113,6 +112,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	
             if (labelCourrant.sommet.equals(destination)) {
             	trouve=true;
+            	notifyDestinationReached(destination);
             }
             if (!(tas.isValid())) {
             	System.out.println("LE TAS N'EST PAS VALIDE");

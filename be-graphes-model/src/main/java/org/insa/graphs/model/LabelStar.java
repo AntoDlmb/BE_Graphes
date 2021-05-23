@@ -1,12 +1,14 @@
 package org.insa.graphs.model;
 
 
+
+
 public class LabelStar extends Label implements Comparable<Label> {
 	private double estimatedCost;
 	
-	public LabelStar(Node sommet, boolean marque, double cost, Arc pere, Node Destination) {
+	public LabelStar(Node sommet, boolean marque, double cost, Arc pere, double estimatedCost) {
 		super(sommet,marque,cost,pere);
-		this.estimatedCost=this.sommet.getPoint().distanceTo(Destination.getPoint());
+		this.estimatedCost=estimatedCost;
 	}
 	
 	public double getEstimatedCost() {
