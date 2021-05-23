@@ -17,9 +17,33 @@ import org.insa.graphs.model.Label;
 import org.insa.graphs.algorithm.utils.BinaryHeap;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
+	
+	protected Graph graph;
+	protected List <Label> labels ;
+	protected Node origin;
+	protected Label labelOrigin;
+	protected Node destination;
+	protected Label labelDestination;
+	protected BinaryHeap <Label> tas ;
 
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
+        this.origin = data.getOrigin();
+        this.destination = data.getDestination();
+        this.graph = data.getGraph();
+        this.labels = new ArrayList<Label>();
+        this.tas = new BinaryHeap <Label> ();
+        //Initialisation des labels
+        for (Node oneNode : graph.getNodes()) {
+        	if (!(oneNode.equals(origin))) {
+        		this.labels.add(new Label(oneNode,false,Double.POSITIVE_INFINITY,null));
+        	}else {
+        		this.labelOrigin = new Label(oneNode,true,0.0,null);
+        		this.labels.add(labelOrigin);
+        		this.tas.insert(labelOrigin);
+        	}
+        }
+        
     }
     
 
@@ -27,14 +51,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     protected ShortestPathSolution doRun() {
     	System.out.println("Entrée dans shortestPathSolution2");
         final ShortestPathData data = getInputData();
+        
         ShortestPathSolution solution = null;
-        Node origin = data.getOrigin();
-        Node destination = data.getDestination();
-        Graph graph = data.getGraph();
-        Arc arc=null;
-        List<Label> labels = new ArrayList<Label>();
-        BinaryHeap <Label> tas = new BinaryHeap <Label> ();
-        Label labelOrigin=null;
         
         //On vérifie d'abord si le l'origine est égal à la destination 
         if (origin.equals(destination)) {
@@ -43,18 +61,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
         
         
-        //Initialisation des labels
-        for (Node oneNode : graph.getNodes()) {
-        	if (!(oneNode.equals(origin))) {
-        		labels.add(new Label(oneNode,false,Double.POSITIVE_INFINITY,arc));
-        	}else {
-        		labelOrigin = new Label(oneNode,true,0.0,arc);
-        		labels.add(labelOrigin);
-        		tas.insert(labelOrigin);
-        	}
-        }
-        //System.out.println("Node init");
-        
+                
     
         //On créé un tableau dans lequel chaque noeud correspond à un label
         List <Label> nodeToLabel = new ArrayList <Label>();

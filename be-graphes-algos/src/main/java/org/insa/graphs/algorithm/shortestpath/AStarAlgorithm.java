@@ -1,22 +1,25 @@
 package org.insa.graphs.algorithm.shortestpath;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import org.insa.graphs.algorithm.AbstractSolution;
-import org.insa.graphs.algorithm.utils.BinaryHeap;
-import org.insa.graphs.model.Arc;
-import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Label;
-import org.insa.graphs.model.Node;
-import org.insa.graphs.model.Path;
 import org.insa.graphs.model.LabelStar;
+import org.insa.graphs.model.Node;
 
 public class AStarAlgorithm extends DijkstraAlgorithm {
 
     public AStarAlgorithm(ShortestPathData data) {
         super(data);
+        for (Node oneNode : graph.getNodes()) {
+        	if (!(oneNode.equals(origin))) {
+        		this.labels.add(new LabelStar(oneNode,false,Double.POSITIVE_INFINITY,null,destination));
+        	}else {
+        		this.labelOrigin = new LabelStar(oneNode,true,0.0,null,destination);
+        		this.labels.add(labelOrigin);
+        		this.tas.insert(labelOrigin);
+        	}
+        }
+        
+        
     }
     
 
