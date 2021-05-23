@@ -106,7 +106,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         	}
         	
         	labelCourrant.marque=true;
-        	//System.out.println(labelCourrant.getCost());
+        	//System.out.println(labelCourrant.getTotalCost());
         	notifyNodeMarked(labelCourrant.sommet);
         	
             if (labelCourrant.sommet.equals(destination)) {
