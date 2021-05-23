@@ -35,11 +35,12 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         List<Label> labels = new ArrayList<Label>();
         BinaryHeap <Label> tas = new BinaryHeap <Label> ();
         Label labelOrigin=null;
+        
         //On vérifie d'abord si le l'origine est égal à la destination 
-       if (origin.equals(destination)) {
+        if (origin.equals(destination)) {
     	   System.out.println("L'origine et la destination sont le même lieu");
     	   return new ShortestPathSolution(data, AbstractSolution.Status.INFEASIBLE);
-       }
+        }
         
         
         //Initialisation des labels
@@ -90,7 +91,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         			tas.remove(labelModif);
         			labelModif.setCost(labelCourrant.getCost()+data.getCost(oneArc));
         			labelModif.pere=oneArc;
-        			nodeToLabel.set(oneArc.getDestination().getId(), labelModif);
         			tas.insert(labelModif);
         		}
         		double newValue=labelModif.getCost();

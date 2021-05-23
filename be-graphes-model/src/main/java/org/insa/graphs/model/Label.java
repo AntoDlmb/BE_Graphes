@@ -15,12 +15,22 @@ public class Label implements Comparable<Label> {
 	public double getCost() {
 		return this.cost;
 	}
+
+	public double getTotalCost() {
+		return this.cost;
+	}
+	
 	public void setCost(double newCost) {
 		this.cost=newCost;
 	}
 	
 	public int compareTo(Label other) {
-		return Double.compare(this.getCost(),other.getCost());
+		if (Double.compare(this.getTotalCost(),other.getTotalCost())==0){
+			return Double.compare(this.getCost(),other.getCost());
+		}else {
+			return Double.compare(this.getTotalCost(),other.getTotalCost());
+		}
+		
 	}
 
 }
