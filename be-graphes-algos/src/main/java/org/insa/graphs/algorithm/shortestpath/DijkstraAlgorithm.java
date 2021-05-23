@@ -1,14 +1,10 @@
 package org.insa.graphs.algorithm.shortestpath;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.print.attribute.standard.Destination;
 
-import org.insa.graphs.algorithm.AbstractInputData;
 import org.insa.graphs.algorithm.AbstractSolution;
-import org.insa.graphs.algorithm.AbstractSolution.Status;
 import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Node;
@@ -32,18 +28,18 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         this.graph = data.getGraph();
         this.labels = new ArrayList<Label>();
         this.tas = new BinaryHeap <Label> ();
-        //Initialisation des labels
-       
-        for (Node oneNode : graph.getNodes()) {
-        	if (!(oneNode.equals(origin))) {
-        		this.labels.add(new Label(oneNode,false,Double.POSITIVE_INFINITY,null));
-        	}else {
-        		this.labelOrigin = new Label(oneNode,true,0.0,null);
-        		this.labels.add(labelOrigin);
-        		this.tas.insert(labelOrigin);
-        	}
-        }
+        //Initialisation du label origin
+        this.labelOrigin=new Label(this.origin,true,0.0,null);
+        this.labels.add(labelOrigin);
+        this.tas.insert(labelOrigin);
         
+    }
+    
+    protected Label NewLabel(Node node, Graph graph, ShortestPathData mode) {
+    	Label newLab = new Label(node,false,Double.POSITIVE_INFINITY,null);
+    	this.labels.add(newLab);
+    	return newLab;
+    	
     }
     
 
@@ -65,13 +61,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
     
         //On créé un tableau dans lequel chaque noeud correspond à un label
         List <Label> nodeToLabel = new ArrayList <Label>();
-        for (int k=0 ; k<labels.size() ; k++) {
+        for (int k=0 ; k<graph.size() ; k++) {
         	nodeToLabel.add(null);
         }
-        for (Label oneLabel : labels) {
-        	nodeToLabel.set(oneLabel.sommet.getId(), oneLabel);
-        }
-        //System.out.println("NodeToLabel");
+        nodeToLabel.set(origin.getId(), labels.get(0));
         
         //On commence l'algorithme 
         boolean trouve = false;
@@ -87,7 +80,14 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		if (!data.isAllowed(oneArc)) {
                     continue;
                 }
-        		labelModif=nodeToLabel.get(oneArc.getDestination().getId());
+        		
+        		if (nodeToLabel.get(oneArc.getDestination().getId())==null) {
+        			labelModif=this.NewLabel(oneArc.getDestination(), this.graph, data);
+        			nodeToLabel.set(oneArc.getDestination().getId(), labelModif);
+        		}else {
+        			labelModif=nodeToLabel.get(oneArc.getDestination().getId());
+        		}
+        		
         		//on insère labelModif dans le tas seulement si il n'a pas été ajouté avant
         		if (labelModif.getCost()==Double.POSITIVE_INFINITY) {
         			tas.insert(labelModif);
@@ -105,7 +105,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		}
         	}
         	
-    
         	labelCourrant.marque=true;
         	//System.out.println(labelCourrant.getCost());
         	notifyNodeMarked(labelCourrant.sommet);
