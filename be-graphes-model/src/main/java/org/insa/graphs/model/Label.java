@@ -26,7 +26,15 @@ public class Label implements Comparable<Label> {
 	
 	public int compareTo(Label other) {
 		if (Double.compare(this.getTotalCost(),other.getTotalCost())==0){
-			return Double.compare(this.getCost(),other.getCost());
+			//On regarde si on est dans le cas dijkstra 
+			if (Double.compare(this.getTotalCost(), this.getCost())==0 && Double.compare(other.getTotalCost(), other.getCost())==0 ) {
+				return Double.compare(this.getCost(),other.getCost());
+			}
+			//ou le cas A*
+			else {
+				return Double.compare(other.getCost(), this.getCost());
+			}
+			
 		}else {
 			return Double.compare(this.getTotalCost(),other.getTotalCost());
 		}
