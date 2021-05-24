@@ -84,14 +84,11 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         		if (nodeToLabel.get(oneArc.getDestination().getId())==null) {
         			labelModif=this.NewLabel(oneArc.getDestination(), this.graph, data);
         			nodeToLabel.set(oneArc.getDestination().getId(), labelModif);
+        			tas.insert(labelModif);
         		}else {
         			labelModif=nodeToLabel.get(oneArc.getDestination().getId());
         		}
         		
-        		//on insère labelModif dans le tas seulement si il n'a pas été ajouté avant
-        		if (labelModif.getCost()==Double.POSITIVE_INFINITY) {
-        			tas.insert(labelModif);
-        		}
         		Double oldvalue=labelModif.getCost();
         		if (labelCourrant.getCost()+data.getCost(oneArc) < labelModif.getCost()){
         			tas.remove(labelModif);

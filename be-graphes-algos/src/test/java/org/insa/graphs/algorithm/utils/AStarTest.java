@@ -34,8 +34,8 @@ public class AStarTest extends DijkstraTest {
 		int dest=0;
 		int max=graphInsa.size();
 		int mode = -1;
-		//On va dester pour 3 trajets aléatoires différents 
-		for (int i = 0 ; i<3 ; i++) {
+		//On va dester pour 10 trajets aléatoires différents 
+		for (int i = 0 ; i<10 ; i++) {
 			origin = random.nextInt(max);
 			dest = random.nextInt(max);
 			mode=random.nextInt(5);
@@ -45,13 +45,13 @@ public class AStarTest extends DijkstraTest {
 			ShortestPathSolution solutionAStar = this.runAlgo(data);
 			ShortestPathSolution solutionDijkstra = Dijkstra.run();
 			ShortestPathSolution solutionBellman = Bellman.run();
-
+			//on regarde si les chemins sont bien faisables 
 			if (solutionAStar.isFeasible() && solutionDijkstra.isFeasible() && solutionBellman.isFeasible()) {
-
+				//Si oui on regarde si ils sont null 
 				if (solutionBellman.getPath()==null) {
 					assertTrue(solutionAStar.getPath()==null);
 					assertTrue(solutionDijkstra.getPath()==null);
-				}else {
+				}else { //Ou on regarde si les resultats renvoyés sont bien identiques
 					assertEquals(solutionBellman.getPath().getLength(), solutionAStar.getPath().getLength(),1e-6);
 					assertEquals(solutionBellman.getPath().getLength(), solutionDijkstra.getPath().getLength(),1e-6);
 					assertEquals(solutionBellman.getPath().getMinimumTravelTime(), solutionAStar.getPath().getMinimumTravelTime(),1e-6);

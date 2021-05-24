@@ -214,6 +214,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     		if (this.array.get(this.indexParent(i)).compareTo(this.array.get(i))>0) {
     			System.out.println(this.indexParent(i));
     			System.out.println(i);
+    			this.percolateUp(i);
     			
     			return false;
     		}

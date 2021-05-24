@@ -147,29 +147,25 @@ public class DijkstraTest {
 			mode = random.nextInt(5);
 			data=new ShortestPathData(graphInsa,graphInsa.get(origin), graphInsa.get(dest), ArcInspectorFactory.getAllFilters().get(mode) );
 			BellmanFordAlgorithm Bellman = new BellmanFordAlgorithm(data);
-			ShortestPathSolution solutionDijkstra = this.runAlgo(data);
+			ShortestPathSolution solutionAlgo = this.runAlgo(data);
 			ShortestPathSolution solutionBellman = Bellman.run();
-			
-			
-			if (solutionDijkstra.isFeasible() && solutionBellman.isFeasible()) {
+
+
+			if (solutionAlgo.isFeasible() && solutionBellman.isFeasible()) {
 				if (solutionBellman.getPath()==null) {
-					assertTrue(solutionDijkstra.getPath()==null);
+					assertTrue(solutionAlgo.getPath()==null);
 				}else {
-					if (mode < 2) {
-						assertEquals(solutionDijkstra.getPath().getLength(), solutionBellman.getPath().getLength(),1e-6);
-					}else {
-						assertEquals(solutionDijkstra.getPath().getMinimumTravelTime(), solutionBellman.getPath().getMinimumTravelTime(),1e-6);
-					}
-					
+					assertEquals(solutionAlgo.getPath().getLength(), solutionBellman.getPath().getLength(),1e-6);
+					assertEquals(solutionAlgo.getPath().getMinimumTravelTime(), solutionBellman.getPath().getMinimumTravelTime(),1e-6);	
 				}	
 			}else {
-				assertFalse(solutionDijkstra.isFeasible());
+				assertFalse(solutionAlgo.isFeasible());
 				assertFalse(solutionBellman.isFeasible());
 			}
-			
+
 		}
-		
-		
+
+
 	}
 	
 	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Fastest path, all roads allowed"
