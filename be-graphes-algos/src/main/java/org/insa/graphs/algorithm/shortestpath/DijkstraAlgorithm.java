@@ -50,10 +50,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         ShortestPathSolution solution = null;
         
-        //On vérifie d'abord si le l'origine est égal à la destination 
+        //On vérifie d'abord si l'origine est égal à la destination 
         if (origin.equals(destination)) {
     	   System.out.println("L'origine et la destination sont le même lieu");
-    	   return new ShortestPathSolution(data, AbstractSolution.Status.INFEASIBLE);
+    	   return new ShortestPathSolution(data, AbstractSolution.Status.OPTIMAL);
         }
         
         

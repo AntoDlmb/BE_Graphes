@@ -10,6 +10,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 
+import org.insa.graphs.algorithm.AbstractSolution;
 import org.insa.graphs.algorithm.ArcInspectorFactory;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathSolution;
@@ -37,10 +38,10 @@ import java.util.Random;
 public class DijkstraTest {
 	
 	//Les 4 graphes que nous utiliseront pour les tests 
-	private static Graph graphInsa = null ;
-	private static Graph graphJapon = null ;  
-	private static Graph graphCarre = null ;
-	private static Graph graphHauteGaronne = null ;
+	protected static Graph graphInsa = null ;
+	protected static Graph graphJapon = null ;  
+	protected static Graph graphCarre = null ;
+	protected static Graph graphHauteGaronne = null ;
 	
 	
 	
@@ -67,32 +68,34 @@ public class DijkstraTest {
 		DijkstraTest.graphHauteGaronne = readerHauteGaronne.read();
 	}
 	
+	public ShortestPathSolution runAlgo (ShortestPathData data) {
+		DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
+		ShortestPathSolution solution = Dijkstra.run();
+		return solution;
+	}
+	
 	//On regarde si un deux éléments connexes donnent un résultat valide (voir critère de validité d'un path)
 	//On test sur les 4 graphes
 	@Test
 	public void testIsValid() {
 		//Test si un chemin généré sur le carte insa est valide
 		ShortestPathData dataInsa = new ShortestPathData(graphInsa,graphInsa.get(13), graphInsa.get(42), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraInsa = new DijkstraAlgorithm(dataInsa);
-		ShortestPathSolution solutionInsa = DijkstraInsa.run();
+		ShortestPathSolution solutionInsa = this.runAlgo(dataInsa);
 		assertTrue(solutionInsa.getPath().isValid());
 		
 		//Test si un chemin généré sur le carte du japon est valide
 		ShortestPathData dataJapon = new ShortestPathData(graphJapon,graphJapon.get(1234), graphJapon.get(4223), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraJapon = new DijkstraAlgorithm(dataJapon);
-		ShortestPathSolution solutionJapon = DijkstraJapon.run();
+		ShortestPathSolution solutionJapon = this.runAlgo(dataJapon);
 		assertTrue(solutionJapon.getPath().isValid());
 		
 		//Test si un chemin généré sur le carte carré est valide
 		ShortestPathData dataCarre = new ShortestPathData(graphCarre,graphCarre.get(13), graphCarre.get(1), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraCarre = new DijkstraAlgorithm(dataCarre);
-		ShortestPathSolution solutionCarre = DijkstraCarre.run();
+		ShortestPathSolution solutionCarre = this.runAlgo(dataCarre);
 		assertTrue(solutionCarre.getPath().isValid());
 		
 		//Test si un chemin généré sur le carte Haute Garonne est valide
 		ShortestPathData dataHG = new ShortestPathData(graphHauteGaronne,graphHauteGaronne.get(121), graphHauteGaronne.get(318), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraHG = new DijkstraAlgorithm(dataHG);
-		ShortestPathSolution solutionHG = DijkstraHG.run();
+		ShortestPathSolution solutionHG = this.runAlgo(dataHG);
 		assertTrue(solutionHG.getPath().isValid());
 	}
 	
@@ -101,13 +104,11 @@ public class DijkstraTest {
 	@Test
 	public void cheminInexistant() {
 		ShortestPathData dataJapon = new ShortestPathData(graphJapon,graphJapon.get(3473935), graphJapon.get(3469904), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraJapon = new DijkstraAlgorithm(dataJapon);
-		ShortestPathSolution solutionJapon = DijkstraJapon.run();
+		ShortestPathSolution solutionJapon = this.runAlgo(dataJapon);
 		assertFalse(solutionJapon.isFeasible());
 		
 		dataJapon = new ShortestPathData(graphJapon,graphJapon.get(3509414), graphJapon.get(1731746), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraJapon = new DijkstraAlgorithm(dataJapon);
-		solutionJapon = DijkstraJapon.run();
+		solutionJapon = this.runAlgo(dataJapon);
 		assertFalse(solutionJapon.isFeasible());
 	}
 	
@@ -116,41 +117,51 @@ public class DijkstraTest {
 	@Test
 	public void cheminDeLongueurNulle() {
 		ShortestPathData dataInsa = new ShortestPathData(graphInsa,graphInsa.get(13), graphInsa.get(13), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraInsa = new DijkstraAlgorithm(dataInsa);
-		ShortestPathSolution solutionInsa = DijkstraInsa.run();
-		assertFalse(solutionInsa.isFeasible());
+		ShortestPathSolution solutionInsa = this.runAlgo(dataInsa);
+		assertTrue(solutionInsa.getStatus()==AbstractSolution.Status.OPTIMAL);
+		assertTrue(solutionInsa.getPath()==null);
 				
 		ShortestPathData dataHG = new ShortestPathData(graphHauteGaronne,graphHauteGaronne.get(121), graphHauteGaronne.get(121), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraHG = new DijkstraAlgorithm(dataHG);
-		ShortestPathSolution solutionHG = DijkstraHG.run();
-		assertFalse(solutionHG.isFeasible());
+		ShortestPathSolution solutionHG = this.runAlgo(dataHG);
+		assertTrue(solutionHG.getStatus()==AbstractSolution.Status.OPTIMAL);
+		assertTrue(solutionHG.getPath()==null);
 		
 	}
 	
 	
-	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Shortest path, all roads allowed"
+	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans différents cas
 	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
 	@Test
-	public void PccDistanceComparaisonBellman() {
-		//System.out.println("*****************Dans comparaison bellmam");
+	public void PccComparaisonBellman() {
+		//System.out.println("**********Dans comparaison bellmam**********");
 		ShortestPathData data ;
 		Random random=new Random();
 		int origin=0;
 		int dest=0;
 		int max=graphInsa.size();
-		//On va dester pour 10 trajets différents 
-		for (int i = 0 ; i<10 ; i++) {
+		int mode=-1;
+		//On va dester pour 20 trajets différents 
+		for (int i = 0 ; i<20 ; i++) {
 			origin = random.nextInt(max);
 			dest = random.nextInt(max);
-			data=new ShortestPathData(graphInsa,graphInsa.get(origin), graphInsa.get(dest), ArcInspectorFactory.getAllFilters().get(0) );
-			DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
+			mode = random.nextInt(5);
+			data=new ShortestPathData(graphInsa,graphInsa.get(origin), graphInsa.get(dest), ArcInspectorFactory.getAllFilters().get(mode) );
 			BellmanFordAlgorithm Bellman = new BellmanFordAlgorithm(data);
-			ShortestPathSolution solutionDijkstra = Dijkstra.run();
+			ShortestPathSolution solutionDijkstra = this.runAlgo(data);
 			ShortestPathSolution solutionBellman = Bellman.run();
 			
 			
 			if (solutionDijkstra.isFeasible() && solutionBellman.isFeasible()) {
-				assertEquals(solutionDijkstra.getPath().getLength(), solutionBellman.getPath().getLength(),1e-6);
+				if (solutionBellman.getPath()==null) {
+					assertTrue(solutionDijkstra.getPath()==null);
+				}else {
+					if (mode < 2) {
+						assertEquals(solutionDijkstra.getPath().getLength(), solutionBellman.getPath().getLength(),1e-6);
+					}else {
+						assertEquals(solutionDijkstra.getPath().getMinimumTravelTime(), solutionBellman.getPath().getMinimumTravelTime(),1e-6);
+					}
+					
+				}	
 			}else {
 				assertFalse(solutionDijkstra.isFeasible());
 				assertFalse(solutionBellman.isFeasible());
@@ -163,131 +174,25 @@ public class DijkstraTest {
 	
 	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Fastest path, all roads allowed"
 	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-	@Test
-	public void PccTempsComparaisonBellman() {
-		ShortestPathData data ;
-		Random random=new Random();
-		int origin=0;
-		int dest=0;
-		int max=graphInsa.size();
-		//On va dester pour 10 trajets différents 
-		for (int i = 0 ; i<10 ; i++) {
-			origin = random.nextInt(max);
-			dest = random.nextInt(max);
-			data=new ShortestPathData(graphInsa,graphInsa.get(origin), graphInsa.get(dest), ArcInspectorFactory.getAllFilters().get(2) );
-			DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
-			BellmanFordAlgorithm Bellman = new BellmanFordAlgorithm(data);
-			ShortestPathSolution solutionDijkstra = Dijkstra.run();
-			ShortestPathSolution solutionBellman = Bellman.run();
-			
-			if (solutionDijkstra.isFeasible() && solutionBellman.isFeasible()) {
-				assertEquals(solutionDijkstra.getPath().getMinimumTravelTime(), solutionBellman.getPath().getMinimumTravelTime(),1e-6);
-			}else {
-				assertFalse(solutionDijkstra.isFeasible());
-				assertFalse(solutionBellman.isFeasible());
-			}
-			
-		}
-		
-	}
 	
 	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Shortest path, only roads open for cars"
 	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-	@Test
-	public void PccDistanceVoitureComparaisonBellman() {
-		ShortestPathData data ;
-		Random random=new Random();
-		int origin=0;
-		int dest=0;
-		int max=graphInsa.size();
-		//On va dester pour 10 trajets différents 
-		for (int i = 0 ; i<10 ; i++) {
-			origin = random.nextInt(max);
-			dest = random.nextInt(max);
-			data=new ShortestPathData(graphInsa,graphInsa.get(origin), graphInsa.get(dest), ArcInspectorFactory.getAllFilters().get(1) );
-			DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
-			BellmanFordAlgorithm Bellman = new BellmanFordAlgorithm(data);
-			ShortestPathSolution solutionDijkstra = Dijkstra.run();
-			ShortestPathSolution solutionBellman = Bellman.run();
-			
-			if (solutionDijkstra.isFeasible() && solutionBellman.isFeasible()) {
-				assertEquals(solutionDijkstra.getPath().getLength(), solutionBellman.getPath().getLength(),1e-6);
-			}else {
-				assertFalse(solutionDijkstra.isFeasible());
-				assertFalse(solutionBellman.isFeasible());
-			}
-			
-		}
-		
-	}
 	
 	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Fastest path, only roads open for cars"
 	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-	@Test
-	public void PccTempsVoitureComparaisonBellman() {
-		ShortestPathData data ;
-		Random random=new Random();
-		int origin=0;
-		int dest=0;
-		int max=graphInsa.size();
-		//On va dester pour 10 trajets différents 
-		for (int i = 0 ; i<10 ; i++) {
-			origin = random.nextInt(max);
-			dest = random.nextInt(max);
-			data=new ShortestPathData(graphInsa,graphInsa.get(origin), graphInsa.get(dest), ArcInspectorFactory.getAllFilters().get(3) );
-			DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
-			BellmanFordAlgorithm Bellman = new BellmanFordAlgorithm(data);
-			ShortestPathSolution solutionDijkstra = Dijkstra.run();
-			ShortestPathSolution solutionBellman = Bellman.run();
-			
-			if (solutionDijkstra.isFeasible() && solutionBellman.isFeasible()) {
-				assertEquals(solutionDijkstra.getPath().getMinimumTravelTime(), solutionBellman.getPath().getMinimumTravelTime(),1e-6);
-			}else {
-				assertFalse(solutionDijkstra.isFeasible());
-				assertFalse(solutionBellman.isFeasible());
-			}
-			
-		}
-		
-	}
 	
 	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Fastest path for pedestrian"
 	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-	@Test
-	public void PccTempsPietonComparaisonBellman() {
-		ShortestPathData data ;
-		Random random=new Random();
-		int origin=0;
-		int dest=0;
-		int max=graphInsa.size();
-		//On va dester pour 10 trajets différents 
-		for (int i = 0 ; i<10 ; i++) {
-			origin = random.nextInt(max);
-			dest = random.nextInt(max);
-			data=new ShortestPathData(graphInsa,graphInsa.get(origin), graphInsa.get(dest), ArcInspectorFactory.getAllFilters().get(4) );
-			DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
-			BellmanFordAlgorithm Bellman = new BellmanFordAlgorithm(data);
-			ShortestPathSolution solutionDijkstra = Dijkstra.run();
-			ShortestPathSolution solutionBellman = Bellman.run();
-			
-			if (solutionDijkstra.isFeasible() && solutionBellman.isFeasible()) {
-				assertEquals(solutionDijkstra.getPath().getMinimumTravelTime(), solutionBellman.getPath().getMinimumTravelTime(),1e-6);
-			}else {
-				assertFalse(solutionDijkstra.isFeasible());
-				assertFalse(solutionBellman.isFeasible());
-			}
-			
-		}
-		
-	}
+
+	//On regarde si la solution obtenue avec notre algo donne bien un chemin optimal en distance à partir d'une liste de noeuds donnée.
+	//On utilise le graph de l'insa et de la haute-garonne
 	
 	//On regarde si la liste de noeuds obtenus par notre algo correspond bien à la plus petite distance possible avec cette liste
 	//On utilise le graph de l'insa et de la haute-garonne
 	@Test
-	public void CoutDijkstraEgalCoutShortestPath() {
+	public void CoutAlgoEgalCoutShortestPath() {
 		ShortestPathData dataInsa = new ShortestPathData(graphInsa,graphInsa.get(13), graphInsa.get(42), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraInsa = new DijkstraAlgorithm(dataInsa);
-		ShortestPathSolution solutionInsa = DijkstraInsa.run();
+		ShortestPathSolution solutionInsa = this.runAlgo(dataInsa);
 		List <Node> nodes= new ArrayList <Node>();
 		nodes.add(dataInsa.getOrigin());
 		//On créé notre liste de noeuds 
@@ -295,11 +200,11 @@ public class DijkstraTest {
 			nodes.add(solutionInsa.getPath().getArcs().get(i).getDestination());
 		}
 		assertEquals(solutionInsa.getPath().getLength(), Path.createShortestPathFromNodes(graphInsa, nodes).getLength(),1e-16);
+		assertEquals(solutionInsa.getPath().getMinimumTravelTime(), Path.createShortestPathFromNodes(graphInsa, nodes).getMinimumTravelTime(),1e-16);
 		
 		
 		ShortestPathData dataHG = new ShortestPathData(graphHauteGaronne,graphHauteGaronne.get(93561), graphHauteGaronne.get(103536), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm DijkstraHG = new DijkstraAlgorithm(dataHG);
-		ShortestPathSolution solutionHG = DijkstraHG.run();
+		ShortestPathSolution solutionHG = this.runAlgo(dataHG);
 		nodes= new ArrayList <Node>();
 		nodes.add(dataHG.getOrigin());
 		//On créé notre liste de noeuds 
@@ -307,16 +212,19 @@ public class DijkstraTest {
 			nodes.add(solutionHG.getPath().getArcs().get(i).getDestination());
 		}
 		assertEquals(solutionHG.getPath().getLength(), Path.createShortestPathFromNodes(graphHauteGaronne, nodes).getLength(),1e-16);
+		assertEquals(solutionHG.getPath().getMinimumTravelTime(), Path.createShortestPathFromNodes(graphInsa, nodes).getMinimumTravelTime(),1e-16);
 		
 	}
+	
+	//On regarde si la solution obtenue avec notre algo donne bien un chemin optimal en temps à partir d'une liste de noeuds donnée
+	//On utilise le graph de l'insa et de la haute-garonne
 	
 	//On regarde si la liste de noeuds obtenus par notre algo correspond bien à la  plus rapide possible avec cette liste
 	//On utilise le graph de l'insa et de la haute-garonne
 	@Test
-	public void CoutDijkstraEgalCoutFastestPath() {
+	public void CoutAlgoEgalCoutFastestPath() {
 		ShortestPathData dataInsa = new ShortestPathData(graphInsa,graphInsa.get(344), graphInsa.get(216), ArcInspectorFactory.getAllFilters().get(2) );
-		DijkstraAlgorithm DijkstraInsa = new DijkstraAlgorithm(dataInsa);
-		ShortestPathSolution solutionInsa = DijkstraInsa.run();
+		ShortestPathSolution solutionInsa = this.runAlgo(dataInsa);
 		List <Node> nodes= new ArrayList <Node>();
 		nodes.add(dataInsa.getOrigin());
 		//On créé notre liste de noeuds 
@@ -324,11 +232,11 @@ public class DijkstraTest {
 			nodes.add(solutionInsa.getPath().getArcs().get(i).getDestination());
 		}
 		assertEquals(solutionInsa.getPath().getLength(), Path.createFastestPathFromNodes(graphInsa, nodes).getLength(),1e-16);
+		assertEquals(solutionInsa.getPath().getMinimumTravelTime(), Path.createFastestPathFromNodes(graphInsa, nodes).getMinimumTravelTime(),1e-16);
 		
 		
 		ShortestPathData dataHG = new ShortestPathData(graphHauteGaronne,graphHauteGaronne.get(93561), graphHauteGaronne.get(103536), ArcInspectorFactory.getAllFilters().get(2) );
-		DijkstraAlgorithm DijkstraHG = new DijkstraAlgorithm(dataHG);
-		ShortestPathSolution solutionHG = DijkstraHG.run();
+		ShortestPathSolution solutionHG = this.runAlgo(dataHG);
 		nodes= new ArrayList <Node>();
 		nodes.add(dataHG.getOrigin());
 		//On créé notre liste de noeuds 
@@ -336,6 +244,7 @@ public class DijkstraTest {
 			nodes.add(solutionHG.getPath().getArcs().get(i).getDestination());
 		}
 		assertEquals(solutionHG.getPath().getLength(), Path.createFastestPathFromNodes(graphHauteGaronne, nodes).getLength(),1e-16);
+		assertEquals(solutionHG.getPath().getMinimumTravelTime(), Path.createFastestPathFromNodes(graphInsa, nodes).getMinimumTravelTime(),1e-16);
 		
 	}
 	
@@ -345,8 +254,7 @@ public class DijkstraTest {
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testNodeNotInGraph() {
 		ShortestPathData data = new ShortestPathData(graphCarre,graphCarre.get(-21), graphCarre.get(42), ArcInspectorFactory.getAllFilters().get(0) );
-		DijkstraAlgorithm Dijkstra = new DijkstraAlgorithm(data);
-		Dijkstra.run();
+		this.runAlgo(data);
 	}
 	
 	
