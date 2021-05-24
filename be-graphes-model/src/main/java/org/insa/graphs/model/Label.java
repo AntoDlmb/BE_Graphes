@@ -12,10 +12,11 @@ public class Label implements Comparable<Label> {
 		this.pere=pere;
 		
 	}
+	//Getter pour avoir le coup
 	public double getCost() {
 		return this.cost;
 	}
-
+	//Ce getter sera utile pour le A*
 	public double getTotalCost() {
 		return this.cost;
 	}
@@ -25,6 +26,7 @@ public class Label implements Comparable<Label> {
 	}
 	
 	public int compareTo(Label other) {
+		//Si les coût totaux sont égaux deux cas sont possibles...
 		if (Double.compare(this.getTotalCost(),other.getTotalCost())==0){
 			//On regarde si on est dans le cas dijkstra 
 			if (Double.compare(this.getTotalCost(), this.getCost())==0 && Double.compare(other.getTotalCost(), other.getCost())==0 ) {
@@ -32,6 +34,7 @@ public class Label implements Comparable<Label> {
 			}
 			//ou le cas A*
 			else {
+				//On compare other<this (si c'est vrai ça veut dire que this à le coût à l'origine le plus grand donc le coût estimé le plus petit)
 				return Double.compare(other.getCost(), this.getCost());
 			}
 			

@@ -33,11 +33,12 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
     			//Pour avoir en km/h
     			estim=estim*3600.0/(maxSpeed*1000); 
     		}else {
+    			//Si on a pas de valeur de de vitesse max renseignée notre estimation est égale à 0
     			estim=0;
     		}
     	}
         
-        
+        //On créé notre LabelStar avec les bons paramètres 
     	Label newLab = new LabelStar(node,false,Double.POSITIVE_INFINITY,null,estim);
     	this.labels.add(newLab);
     	return newLab;

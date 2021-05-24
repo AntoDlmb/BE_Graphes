@@ -141,8 +141,10 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         if (indexElement==-1 || indexElement>=this.currentSize) {
         	throw (new ElementNotFoundException(x));	
         }
+        //On remplace l'élément qu'on veut enlever par le dernier élément du tas
         this.arraySet(indexElement, this.array.get(this.currentSize-1));
         this.currentSize-=1;
+        //Puis on place ce dernier élément au bon endroit dans le tas
         this.percolateDown(indexElement);
         this.percolateUp(indexElement);
     }
@@ -212,6 +214,8 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     public boolean isValid() {
     	for (int i = this.currentSize-1; i>=0 ; i-- ) {
     		if (this.array.get(this.indexParent(i)).compareTo(this.array.get(i))>0) {
+    			//Si on a un enfant plus petit qu'un parent alors on le monte dans le tas
+    			//Cependant, ce cas ne devrait jamais arrivé
     			System.out.println(this.indexParent(i));
     			System.out.println(i);
     			this.percolateUp(i);

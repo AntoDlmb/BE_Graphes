@@ -15,6 +15,7 @@ public class LabelStar extends Label implements Comparable<Label> {
 		return this.estimatedCost;
 	}
 	
+	//Cette méthode nous permet de connaitre le coût total d'un labelStar
 	@Override
 	public double getTotalCost() {
 		return this.getEstimatedCost()+this.getCost();
