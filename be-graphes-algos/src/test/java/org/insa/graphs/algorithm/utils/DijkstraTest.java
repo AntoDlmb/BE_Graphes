@@ -170,20 +170,6 @@ public class DijkstraTest {
 
 	}
 	
-	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Fastest path, all roads allowed"
-	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-	
-	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Shortest path, only roads open for cars"
-	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-	
-	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Fastest path, only roads open for cars"
-	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-	
-	//On fait une comparaison des résultats obtenus pas Bellman-Ford et l'algo dans le cadre d'un "Fastest path for pedestrian"
-	//On fait le test sur le graph de l'insa pour 10 trajets aléatoires différents
-
-	//On regarde si la solution obtenue avec notre algo donne bien un chemin optimal en distance à partir d'une liste de noeuds donnée.
-	//On utilise le graph de l'insa et de la haute-garonne
 	
 	//On regarde si la liste de noeuds obtenus par notre algo correspond bien à la plus petite distance possible avec cette liste
 	//On utilise le graph de l'insa et de la haute-garonne
